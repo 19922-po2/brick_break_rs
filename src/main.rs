@@ -1,14 +1,18 @@
 use macroquad::prelude::*;
 
+mod ball;
+mod paddle;
+
 #[macroquad::main("Brick Breaker")]
 async fn main() {
-    let paddle_width = 100.0;
-    let paddle_height = 20.0;
-    let paddle_speed = 500.0; // Pixels per second
-    let paddle_x = (screen_width() - paddle_width) / 2.0;
-    let paddle_y = screen_height() - 50.0;
+    /* Players paddle */
+    let paddle_width: f32 = 100.0;
+    let paddle_height: f32 = 20.0;
+    let paddle_speed: f32 = 500.0; // Pixels per second
+    let paddle_x: f32 = (screen_width() - paddle_width) / 2.0;
+    let paddle_y: f32 = screen_height() - 50.0;
 
-    let mut paddle = Paddle::new(
+    let mut paddle = paddle::Paddle::new(
         paddle_x,
         paddle_y,
         paddle_width,
@@ -16,47 +20,27 @@ async fn main() {
         paddle_speed,
     );
 
+    /* Ball */
+    let ball_radius: f32 = 10.0;
+    let ball_x: f32 = screen_width() / 2.0;
+    let ball_y: f32 = screen_height() / 2.0;
+    let ball_velocity_x: f32 = -200.0;
+    let ball_velocity_y: f32 = -200.0;
+
+    let mut ball = ball::Ball::new(
+        ball_x,
+        ball_y,
+        ball_velocity_x,
+        ball_velocity_y,
+        ball_radius,
+    );
+
     loop {
         paddle.update();
+        ball.update();
         clear_background(BLACK);
         paddle.draw();
+        ball.draw();
         next_frame().await
-    }
-}
-pub struct Paddle {
-    pub rect: Rect,
-    pub speed: f32,
-}
-
-impl Paddle {
-    pub fn new(x: f32, y: f32, width: f32, height: f32, speed: f32) -> Self {
-        Self {
-            rect: Rect::new(x, y, width, height),
-            speed,
-        }
-    }
-
-    pub fn update(&mut self) {
-        // Handles player input to move the paddle
-        let delta_time = get_frame_time();
-
-        if is_key_down(KeyCode::Left) {
-            self.rect.x -= self.speed * delta_time;
-        }
-        if is_key_down(KeyCode::Right) {
-            self.rect.x += self.speed * delta_time;
-        }
-
-        // keep it inside the window
-        if self.rect.x < 0.0 {
-            self.rect.x = 0.0;
-        }
-        if self.rect.x + self.rect.w > screen_width() {
-            self.rect.x = screen_width() - self.rect.w;
-        }
-    }
-
-    pub fn draw(&self) {
-        draw_rectangle(self.rect.x, self.rect.y, self.rect.w, self.rect.h, WHITE);
     }
 }
