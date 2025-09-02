@@ -13,6 +13,10 @@ impl Paddle {
         }
     }
 
+    pub fn get_position(&self) -> &Rect {
+        return &self.rect;
+    }
+
     pub fn update(&mut self) {
         // Handles player input to move the paddle
         let delta_time = get_frame_time();

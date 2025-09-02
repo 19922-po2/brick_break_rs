@@ -24,8 +24,8 @@ async fn main() {
     let ball_radius: f32 = 10.0;
     let ball_x: f32 = screen_width() / 2.0;
     let ball_y: f32 = screen_height() / 2.0;
-    let ball_velocity_x: f32 = -200.0;
-    let ball_velocity_y: f32 = -200.0;
+    let ball_velocity_x: f32 = -400.0;
+    let ball_velocity_y: f32 = -400.0;
 
     let mut ball = ball::Ball::new(
         ball_x,
@@ -33,14 +33,20 @@ async fn main() {
         ball_velocity_x,
         ball_velocity_y,
         ball_radius,
+        true,
     );
 
     loop {
-        paddle.update();
-        ball.update();
-        clear_background(BLACK);
-        paddle.draw();
-        ball.draw();
-        next_frame().await
+        if ball.moving {
+            paddle.update();
+            ball.update(&*paddle.get_position());
+            clear_background(BLACK);
+            paddle.draw();
+            ball.draw();
+            next_frame().await
+        } else {
+            // game over - restart game ?
+            break;
+        }
     }
 }
