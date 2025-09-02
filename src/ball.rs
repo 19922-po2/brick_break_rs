@@ -1,5 +1,7 @@
 use macroquad::prelude::*;
 
+use crate::brick;
+
 pub struct Ball {
     pub pos: Vec2,
     pub vel: Vec2,
@@ -17,7 +19,7 @@ impl Ball {
         }
     }
 
-    pub fn update(&mut self, &paddle_position: &Rect) {
+    pub fn update(&mut self, &paddle_position: &Rect, bricks: &mut Vec<brick::Brick>) {
         let delta_time = get_frame_time();
         self.pos += self.vel * delta_time; // Update position based on velocity
 
@@ -30,6 +32,14 @@ impl Ball {
         if self.pos.x - self.radius < 0.0 {
             self.vel.x *= -1.0;
             self.pos.x = self.radius;
+        }
+        // brick collision
+        for block in bricks.iter_mut() {
+            if block.health > 0 && self.collides_with_block(block) {
+                self.vel.y *= -1.0; // Bounce vertically
+                block.decrease_health(1);
+                break; // Only collide with one brick per frame
+            }
         }
         // top
         if self.pos.y - self.radius < 0.0 {
@@ -51,6 +61,24 @@ impl Ball {
             self.moving = false;
             println!("GAME OVER!!");
         }
+    }
+
+    fn collides_with_block(&self, block: &brick::Brick) -> bool {
+        println!("colling with brick!");
+        let ball_left = self.pos.x - self.radius;
+        let ball_right = self.pos.x + self.radius;
+        let ball_top = self.pos.y - self.radius;
+        let ball_bottom = self.pos.y + self.radius;
+
+        let block_left = block.rect.x;
+        let block_right = block.rect.x + block.rect.w;
+        let block_top = block.rect.y;
+        let block_bottom = block.rect.y + block.rect.h;
+
+        ball_right >= block_left
+            && ball_left <= block_right
+            && ball_bottom >= block_top
+            && ball_top <= block_bottom
     }
 
     pub fn draw(&self) {

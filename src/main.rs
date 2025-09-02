@@ -13,7 +13,7 @@ async fn main() {
     loop {
         if ball.moving {
             paddle.update();
-            ball.update(&*paddle.get_position());
+            ball.update(&*paddle.get_position(), &mut bricks);
             /* for brick in &mut bricks {
                 brick.update();
             } */
@@ -65,7 +65,7 @@ fn initialize_bricks(amount: i32, amount_per_row: i32) -> Vec<brick::Brick> {
 fn initialize_paddle() -> paddle::Paddle {
     let paddle_width: f32 = 100.0;
     let paddle_height: f32 = 20.0;
-    let paddle_speed: f32 = 500.0; // Pixels per second
+    let paddle_speed: f32 = 700.0; // Pixels per second
     let paddle_x: f32 = (screen_width() - paddle_width) / 2.0;
     let paddle_y: f32 = screen_height() - 50.0;
 
